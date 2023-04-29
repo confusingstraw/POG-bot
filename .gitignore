@@ -19,3 +19,7 @@ doc/build/
 .python-version
 .pdm.toml
 __pypackages__
+.venv/
+.db-data/
+.bot-logs/
+.match-data/
