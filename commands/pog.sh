@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
@@ -49,7 +49,7 @@ function my_start
     mkdir -p ../POG-data
     mkdir -p ../POG-data/logging
     mkdir -p ../POG-data/matches
-    nohup python3 -u commands/pog_launcher.py >> ../POG-data/logging/launcher.out 2>&1 &
+    nohup python3 -u commands/pog_launcher.py
     echo "Bot started..."
   fi
 }
