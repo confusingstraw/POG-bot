@@ -62,10 +62,13 @@ def init(secret_file: str):
             _busy_accounts[a_id].update(a_username, a_password)
         else:
             # If account doesn't exist already, initialize it
-            unique_usages = db.get_field("accounts_usage", a_id, "unique_usages")
-            if unique_usages is None:
-                raise UnexpectedError(f"Can't find usage for account {a_id}")
-            _available_accounts[a_id] = classes.Account(a_id_str, a_username, a_password, unique_usages)
+            unique_usages = db.get_field(
+                "accounts_usage", a_id, "unique_usages", list()
+            )
+            # raise UnexpectedError(f"Can't find usage for account {a_id}")
+            _available_accounts[a_id] = classes.Account(
+                a_id_str, a_username, a_password, unique_usages
+            )
 
 
 async def give_account(a_player: classes.ActivePlayer) -> bool:
@@ -77,7 +80,9 @@ async def give_account(a_player: classes.ActivePlayer) -> bool:
     :return: True is account given, False if not enough accounts available.
     """
     # Get player usages
-    unique_usages = await db.async_db_call(db.get_field, "accounts_usage", a_player.id, "unique_usages")
+    unique_usages = await db.async_db_call(
+        db.get_field, "accounts_usage", a_player.id, "unique_usages"
+    )
     if not unique_usages:
         unique_usages = list()
 
@@ -129,7 +134,9 @@ def _set_account(acc: classes.Account, a_player: classes.ActivePlayer):
     :param acc: Account to give.
     :param a_player: Player who will receive the account.
     """
-    log.info(f"Give account [{acc.id}] to player: id:[{a_player.id}], name:[{a_player.name}]")
+    log.info(
+        f"Give account [{acc.id}] to player: id:[{a_player.id}], name:[{a_player.name}]"
+    )
 
     # Put account in the busy dictionary
     del _available_accounts[acc.id]
@@ -161,11 +168,20 @@ async def send_account(channel: discord.TextChannel, a_player: classes.ActivePla
         # Else validate the account and send it to staff channel instead
         await disp.ACC_CLOSED.send(channel, a_player.mention)
         await a_player.account.validate()
-        msg = await disp.ACC_STAFF.send(ContextWrapper.channel(cfg.channels["staff"]),
-                                        f'<@&{cfg.roles["admin"]}>', a_player.mention, account=a_player.account)
+        msg = await disp.ACC_STAFF.send(
+            ContextWrapper.channel(cfg.channels["staff"]),
+            f'<@&{cfg.roles["admin"]}>',
+            a_player.mention,
+            account=a_player.account,
+        )
     # Set the account message, log the account:
     a_player.account.message = msg
-    await disp.ACC_LOG.send(ContextWrapper.channel(cfg.channels["spam"]), a_player.name, a_player.id, a_player.account.id)
+    await disp.ACC_LOG.send(
+        ContextWrapper.channel(cfg.channels["spam"]),
+        a_player.name,
+        a_player.id,
+        a_player.account.id,
+    )
 
 
 async def terminate_account(a_player: classes.ActivePlayer):
@@ -192,13 +208,17 @@ async def terminate_account(a_player: classes.ActivePlayer):
             "id": acc.id,
             "time_start": acc.last_usage["time_start"],
             "time_stop": acc.last_usage["time_stop"],
-            "match_id": a_player.match.id
+            "match_id": a_player.match.id,
         }
         # Update the account element
-        await db.async_db_call(db.push_element, "accounts_usage", acc.id, {"usages": acc.last_usage})
+        await db.async_db_call(
+            db.push_element, "accounts_usage", acc.id, {"usages": acc.last_usage}
+        )
         try:
             # Update the player element
-            await db.async_db_call(db.push_element, "accounts_usage", a_player.id, {"usages": p_usage})
+            await db.async_db_call(
+                db.push_element, "accounts_usage", a_player.id, {"usages": p_usage}
+            )
         except db.DatabaseError:
             # If the player element doesn't exist, create it
             data = dict()
@@ -231,4 +251,3 @@ def get_not_validated_accounts(team: classes.Team) -> list:
         if not p.account.is_validated:
             not_ready.append(p)
     return not_ready
-
