@@ -6,7 +6,7 @@
 from pymongo import MongoClient
 from asyncio import get_event_loop
 from logging import getLogger
-from typing import Callable
+from typing import Any, Callable
 
 log = getLogger("pog_bot")
 
@@ -20,6 +20,7 @@ class DatabaseError(Exception):
 
     :param msg: Error message.
     """
+
     def __init__(self, msg: str):
         message = "Error in database: " + msg
         super().__init__(message)
@@ -91,7 +92,9 @@ def set_field(collection: str, e_id: int, doc: dict):
     if _collections[collection].count_documents({"_id": e_id}) != 0:
         _collections[collection].update_one({"_id": e_id}, {"$set": doc})
     else:
-        raise DatabaseError(f"set_field: Element {e_id} doesn't exist in collection {collection}")
+        raise DatabaseError(
+            f"set_field: Element {e_id} doesn't exist in collection {collection}"
+        )
 
 
 def unset_field(collection: str, e_id: int, doc: dict):
@@ -106,7 +109,9 @@ def unset_field(collection: str, e_id: int, doc: dict):
     if _collections[collection].count_documents({"_id": e_id}) != 0:
         _collections[collection].update_one({"_id": e_id}, {"$unset": doc})
     else:
-        raise DatabaseError(f"set_field: Element {e_id} doesn't exist in collection {collection}")
+        raise DatabaseError(
+            f"set_field: Element {e_id} doesn't exist in collection {collection}"
+        )
 
 
 def push_element(collection: str, e_id: int, doc: dict):
@@ -121,7 +126,9 @@ def push_element(collection: str, e_id: int, doc: dict):
     if _collections[collection].count_documents({"_id": e_id}) != 0:
         _collections[collection].update_one({"_id": e_id}, {"$push": doc})
     else:
-        raise DatabaseError(f"set_field: Element {e_id} doesn't exist in collection {collection}")
+        raise DatabaseError(
+            f"set_field: Element {e_id} doesn't exist in collection {collection}"
+        )
 
 
 def get_element(collection: str, item_id: int) -> (dict, None):
@@ -138,7 +145,7 @@ def get_element(collection: str, item_id: int) -> (dict, None):
     return item
 
 
-def get_field(collection: str, e_id: int, specific: str):
+def get_field(collection: str, e_id: int, specific: str, fallback: Any = None):
     """
     Get one field of a single element.
 
@@ -149,7 +156,12 @@ def get_field(collection: str, e_id: int, specific: str):
     """
     if _collections[collection].count_documents({"_id": e_id}) == 0:
         return
-    item = _collections[collection].find_one({"_id": e_id}, {"_id": 0, specific: 1})[specific]
+    item = _collections[collection].find_one({"_id": e_id}, {"_id": 0, specific: 1})[
+        specific
+    ]
+    if item == None and fallback != None:
+        set_field(collection, e_id, {specific: fallback})
+        return get_field(collection, e_id, specific)
     return item
 
 
