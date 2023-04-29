@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  bot:
+    image: pog-bot:latest
+    volumes:
+      - ./bot:/pog-bot/bot
+      - ./commands:/pog-bot/commands
+      - ./.match-data:/POG-data/matches
+      - ./.bot-logs:/POG-data/logging
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      MONGO_INITDB_DATABASE: pog
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - ./.db-data:/data/db
