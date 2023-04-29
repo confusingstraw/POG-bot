@@ -12,7 +12,14 @@ from modules.tools import UnexpectedError
 import modules.lobby as lobby
 import modules.stat_processor as stat_processor
 
-from match.processes import CaptainSelection, PlayerPicking, FactionPicking, BasePicking, GettingReady, MatchPlaying
+from match.processes import (
+    CaptainSelection,
+    PlayerPicking,
+    FactionPicking,
+    BasePicking,
+    GettingReady,
+    MatchPlaying,
+)
 from match.commands import CommandFactory
 from match.match_status import MatchStatus
 from .base_selector import on_match_over
@@ -69,8 +76,10 @@ class Match:
     @property
     def channel(self):
         if not self.__objects:
-            raise AttributeError("Match instance is not bound,\
-                                  no attribute 'channel'")
+            raise AttributeError(
+                "Match instance is not bound,\
+                                  no attribute 'channel'"
+            )
         return self.__objects.channel
 
     @property
@@ -88,7 +97,9 @@ class Match:
     @property
     def status_str(self):
         if not self.__objects:
-            raise AttributeError("Match instance is not bound, no attribute 'status_str'")
+            raise AttributeError(
+                "Match instance is not bound, no attribute 'status_str'"
+            )
         return self.__objects.status_str
 
     @property
@@ -121,7 +132,9 @@ class Match:
 
     def change_check(self, arg):
         if not self.__objects:
-            raise AttributeError("Match instance is not bound, no attribute 'change_check'")
+            raise AttributeError(
+                "Match instance is not bound, no attribute 'change_check'"
+            )
         if arg == "online":
             self.__objects.check_offline = not self.__objects.check_offline
             return self.__objects.check_offline
@@ -147,7 +160,9 @@ class Match:
     @property
     def bases_list(self):
         if not self.__objects:
-            raise AttributeError(f"Match instance is not bound, no attribute 'bases_list'")
+            raise AttributeError(
+                f"Match instance is not bound, no attribute 'bases_list'"
+            )
         return self.__objects.base_selector.bases_list
 
     def __getattr__(self, name):
@@ -161,8 +176,10 @@ class MatchData:
         self.match = match
         if data:
             self.id = data["_id"]
-            self.teams = [TeamScore.from_data(0, match, data["teams"][0]),
-                          TeamScore.from_data(1, match, data["teams"][1])]
+            self.teams = [
+                TeamScore.from_data(0, match, data["teams"][0]),
+                TeamScore.from_data(1, match, data["teams"][1]),
+            ]
             self.base = Base.get(data["base_id"])
             self.round_length = data["round_length"]
             self.round_stamps = data["round_stamps"]
@@ -212,8 +229,16 @@ class MatchData:
                 await p.db_update_stats()
 
 
-_process_list = [CaptainSelection, PlayerPicking, FactionPicking, BasePicking, GettingReady, MatchPlaying,
-                 GettingReady, MatchPlaying]
+_process_list = [
+    CaptainSelection,
+    PlayerPicking,
+    FactionPicking,
+    BasePicking,
+    GettingReady,
+    MatchPlaying,
+    GettingReady,
+    MatchPlaying,
+]
 
 
 class MatchObjects:

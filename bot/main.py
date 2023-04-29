@@ -44,23 +44,26 @@ from classes import Player, Base, Weapon
 
 log = logging.getLogger("pog_bot")
 
-_interactions_handler = modules.interactions.InteractionHandler(None, views.accept_button, disable_after_use=False)
+_interactions_handler = modules.interactions.InteractionHandler(
+    None, views.accept_button, disable_after_use=False
+)
 
 
 def _add_main_handlers(client):
     """_add_main_handlers, private function
-        Parameters
-        ----------
-        client : discord.py bot
-            Our bot object
+    Parameters
+    ----------
+    client : discord.py bot
+        Our bot object
     """
 
     try:
         # help command, works in all channels
-        @client.command(aliases=['h'])
+        @client.command(aliases=["h"])
         @commands.guild_only()
         async def help(ctx):
             await disp.HELP.send(ctx)
+
     except commands.errors.CommandRegistrationError:
         log.warning("Skipping =help registration")
 
@@ -88,10 +91,11 @@ def _add_main_handlers(client):
                 channel_id = cfg.channels[cog_name]
                 channel_str = ""
                 if isinstance(channel_id, list):
-                    channel_str = "channels " + \
-                        ", ".join(f'<#{id}>' for id in channel_id)
+                    channel_str = "channels " + ", ".join(
+                        f"<#{id}>" for id in channel_id
+                    )
                 else:
-                    channel_str = f'channel <#{channel_id}>'
+                    channel_str = f"channel <#{channel_id}>"
                 # Send the use back to the right channel
                 await disp.WRONG_CHANNEL.send(ctx, ctx.command.name, channel_str)
             except KeyError:  # Should not happen
@@ -154,8 +158,7 @@ async def _update_rules_message(client):
 
 
 def _add_init_handlers(client):
-
-    @_interactions_handler.callback('accept')
+    @_interactions_handler.callback("accept")
     async def on_rule_accept(player, interaction_id, interaction, interaction_values):
         user = interaction.user
         if modules.loader.is_all_locked():
@@ -166,14 +169,19 @@ def _add_init_handlers(client):
             # create a new profile
             p = Player(user.id, user.name)
             await modules.roles.role_update(p)
-            await modules.database.async_db_call(modules.database.set_element, "users", p.id, p.get_data())
-            await disp.REG_RULES.send(ContextWrapper.channel(cfg.channels["register"]),
-                                      user.mention)
+            await modules.database.async_db_call(
+                modules.database.set_element, "users", p.id, p.get_data()
+            )
+            await disp.REG_RULES.send(
+                ContextWrapper.channel(cfg.channels["register"]), user.mention
+            )
         elif p.is_away:
             p.is_away = False
             await modules.roles.role_update(p)
             await p.db_update("away")
-            await disp.AWAY_BACK.send(ContextWrapper.channel(cfg.channels["register"]), p.mention)
+            await disp.AWAY_BACK.send(
+                ContextWrapper.channel(cfg.channels["register"]), p.mention
+            )
         else:
             i_ctx = InteractionContext(interaction)
             await disp.REG_RULES_ALREADY.send(i_ctx)
@@ -191,7 +199,10 @@ def _add_init_handlers(client):
         # Init http
         await modules.asynchttp.init_http()
 
-        _update_rules_message.start(client)
+        try:
+            _update_rules_message.start(client)
+        except e:
+            log.error(e)
 
         # Update all players roles
         for p in Player.get_all_players_list():
@@ -208,18 +219,26 @@ def _add_init_handlers(client):
                     for p_id in last_lobby:
                         try:
                             player = Player.get(int(p_id))
-                            if player and not modules.lobby.is_lobby_stuck() and player.is_registered:
+                            if (
+                                player
+                                and not modules.lobby.is_lobby_stuck()
+                                and player.is_registered
+                            ):
                                 modules.lobby.add_to_lobby(player)
                         except ValueError:
                             pass
-                    modules.database.set_field("restart_data", 0, {"last_lobby": list()})
+                    modules.database.set_field(
+                        "restart_data", 0, {"last_lobby": list()}
+                    )
 
             names = modules.lobby.get_all_names_in_lobby()
             if names:
-                await disp.LB_QUEUE.send(ContextWrapper.channel(cfg.channels["lobby"]),
-                                         names_in_lobby=modules.lobby.get_all_names_in_lobby())
+                await disp.LB_QUEUE.send(
+                    ContextWrapper.channel(cfg.channels["lobby"]),
+                    names_in_lobby=modules.lobby.get_all_names_in_lobby(),
+                )
         modules.loader.unlock_all(client)
-        log.info('Client is ready!')
+        log.info("Client is ready!")
         await disp.RDY.send(ContextWrapper.channel(cfg.channels["spam"]), cfg.VERSION)
 
     @client.event
@@ -229,19 +248,22 @@ def _add_init_handlers(client):
 
 # TODO: testing, to be removed
 def _test(client):
-    from template_test_file import test_hand
-    test_hand(client)
+    pass
+    # from template_test_file import test_hand
+    # test_hand(client)
 
 
 def _define_log(launch_str):
     # Logging config, logging outside the github repo
     try:
-        os.makedirs('../../POG-data/logging')
+        os.makedirs("../../POG-data/logging")
     except FileExistsError:
         pass
-    log_filename = '../../POG-data/logging/bot_log'
+    log_filename = "../../POG-data/logging/bot_log"
     logging.Formatter.converter = gmtime
-    formatter = logging.Formatter('%(asctime)s | %(levelname)s %(message)s', "%Y-%m-%d %H:%M:%S UTC")
+    formatter = logging.Formatter(
+        "%(asctime)s | %(levelname)s %(message)s", "%Y-%m-%d %H:%M:%S UTC"
+    )
     # If test mode
     if launch_str == "_test":
         # Print debug
@@ -253,7 +275,9 @@ def _define_log(launch_str):
         level = logging.INFO
         # Print to file, change file everyday at 12:00 UTC
         date = dt(2020, 1, 1, 12)
-        file_handler = logging.handlers.TimedRotatingFileHandler(log_filename, when='midnight', atTime=date, utc=True)
+        file_handler = logging.handlers.TimedRotatingFileHandler(
+            log_filename, when="midnight", atTime=date, utc=True
+        )
     log.setLevel(level)
     file_handler.setLevel(level)
     file_handler.setFormatter(formatter)
@@ -262,14 +286,15 @@ def _define_log(launch_str):
         """
         Fake file-like stream object that redirects writes to a logger instance.
         """
+
         def __init__(self, logger, log_level=logging.INFO):
             self.logger = logger
             self.log_level = log_level
-            self.linebuf = ''
+            self.linebuf = ""
 
         def write(self, buf):
             for line in buf.rstrip().splitlines():
-                  self.logger.log(self.log_level, line.rstrip())
+                self.logger.log(self.log_level, line.rstrip())
 
         def flush(self):
             pass
@@ -300,7 +325,6 @@ class PogClient(commands.Bot):
 
 
 def main(launch_str=""):
-
     _define_log(launch_str)
 
     # Init order MATTERS
@@ -333,7 +357,7 @@ def main(launch_str=""):
     client = PogClient(intents)
 
     # Remove default help
-    client.remove_command('help')
+    client.remove_command("help")
 
     # Initialise db and get all the registered users and all bases from it
     modules.database.init(cfg.database)
@@ -375,7 +399,9 @@ if __name__ == "__main__":
         print("Running mode: 'DEV'")
         main("_test")
     else:
-        print("Running mode: 'PROD', all output will be redirected to log files!\n"
-              "Make sure to run in 'DEV' mode if you want debug output!"
-              "Add a file called 'test' next to main.py to switch to 'DEV' mode")
+        print(
+            "Running mode: 'PROD', all output will be redirected to log files!\n"
+            "Make sure to run in 'DEV' mode if you want debug output!"
+            "Add a file called 'test' next to main.py to switch to 'DEV' mode"
+        )
         main()
