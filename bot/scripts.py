@@ -21,7 +21,7 @@ db.init(cfg.database)
 
 
 def get_accounts():
-    gc = service_account(filename=f'google_api_secret{LAUNCHSTR}.json')
+    gc = service_account(filename=f"google_api_secret{LAUNCHSTR}.json")
     sh = gc.open_by_key(cfg.database["accounts"])
     raw_sheet = sh.worksheet("1")
     sheet_tab = array(raw_sheet.get_all_values())
@@ -47,9 +47,8 @@ def push_accounts_to_usage():
         db.set_element("accounts_usage", int(acc), dta)
 
 
-def push_accounts_to_users():
+async def push_accounts_to_users():
     accs = get_accounts()
-    loop = asyncio.get_event_loop()
     p_list = list()
 
     for acc in accs:
@@ -59,9 +58,8 @@ def push_accounts_to_users():
         char_list = [f"POGx{acc}VS", f"POGx{acc}TR", f"POGx{acc}NC"]
         p.__has_own_account = True
         p.__is_registered = True
-        loop.run_until_complete(p._add_characters(char_list))
+        await p._add_characters(char_list)
         db.set_element("users", p.id, p.get_data())
-    loop.close()
 
 
 def get_all_bases_from_api():
@@ -136,7 +134,8 @@ def fill_player_stats():
         la.append(x.get_data())
     db.force_update("player_stats", la)
 
+
 if __name__ == "__main__":
     push_accounts_to_usage()
-    #push_accounts_to_users()
-    #get_all_bases_from_api()
+    # push_accounts_to_users()
+    # get_all_bases_from_api()
