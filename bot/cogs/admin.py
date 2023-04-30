@@ -24,6 +24,7 @@ from scripts import (
     push_accounts_to_users,
     get_all_bases_from_api,
 )
+from weapons_script import push_all_weapons
 
 from match.classes.match import Match
 
@@ -332,6 +333,7 @@ class AdminCog(commands.Cog, name="admin"):
                 return
             if arg == "weapons":
                 classes.Weapon.clear_all()
+                push_all_weapons(True)
                 await loop.run_in_executor(
                     None, db.get_all_elements, classes.Weapon, "static_weapons"
                 )
@@ -372,25 +374,6 @@ class AdminCog(commands.Cog, name="admin"):
                 )
                 Match.init_channels(self.client, cfg.channels["matches"])
                 await disp.BOT_INIT.send(ctx, "Restart Data")
-
-            await loop.run_in_executor(None, accounts_sheet.init, cfg.GAPI_JSON)
-            await disp.BOT_INIT.send(ctx, "Accounts")
-
-            classes.Weapon.clear_all()
-            await loop.run_in_executor(
-                None, db.get_all_elements, classes.Weapon, "static_weapons"
-            )
-            await disp.BOT_INIT.send(ctx, "Weapons")
-
-            classes.Base.clear_all()
-            await loop.run_in_executor(
-                None, db.get_all_elements, classes.Base, "static_bases"
-            )
-            await disp.BOT_INIT.send(ctx, "Bases")
-
-            await loop.run_in_executor(None, cfg.get_config, cfg.LAUNCH_STR)
-            await loop.run_in_executor(None, db.init, cfg.database)
-            await disp.BOT_INIT.send(ctx, "Config")
             return
 
         await disp.WRONG_USAGE.send(ctx, ctx.command.name)
