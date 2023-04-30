@@ -29,42 +29,66 @@ item_type_id = 26  # weapon
 
 # List of all categories
 we_cats = {
-    2: 'Knife',  # DET
-    3: 'Pistol',  # DET
-    8: 'Carbine',  # DET
-    7: 'Assault Rifle',  # DET
-    139: 'Infantry Abilities',  # BAN
-    4: 'Shotgun',  # BAN
-    6: 'LMG',  # DET
-    13: 'Rocket Launcher',  # NP, DET
-    11: 'Sniper Rifle',  # DET
-    18: 'Explosive',  # BAN
-    17: 'Grenade',  # DET
-    5: 'SMG',  # DET
-    19: 'Battle Rifle',  # DET
-    24: 'Crossbow',  # ALL
-    12: 'Scout Rifle',  # ALL
-    10: 'AI MAX (Left)',  # BAN
-    14: 'Heavy Weapon',  # BAN
-    21: 'AV MAX (Right)',  # BAN
-    20: 'AA MAX (Right)',  # BAN
-    22: 'AI MAX (Right)',  # BAN
-    9: 'AV MAX (Left)',  # BAN
-    23: 'AA MAX (Left)',  # BAN
-    147: 'Aerial Combat Weapon',  # ALL
-    104: 'Vehicle Weapons',  # BAN
-    211: 'Colossus Primary Weapon',  # BAN
-    144: 'ANT Top Turret',  # BAN
-    157: 'Hybrid Rifle',  # BAN
-    126: 'Reaver Wing Mount',  # BAN
-    208: 'Bastion Point Defense',  # BAN
-    209: 'Bastion Bombard',  # BAN
-    210: 'Bastion Weapon System'  # BAN
+    2: "Knife",  # DET
+    3: "Pistol",  # DET
+    8: "Carbine",  # DET
+    7: "Assault Rifle",  # DET
+    139: "Infantry Abilities",  # BAN
+    4: "Shotgun",  # BAN
+    6: "LMG",  # DET
+    13: "Rocket Launcher",  # NP, DET
+    11: "Sniper Rifle",  # DET
+    18: "Explosive",  # BAN
+    17: "Grenade",  # DET
+    5: "SMG",  # DET
+    19: "Battle Rifle",  # DET
+    24: "Crossbow",  # ALL
+    12: "Scout Rifle",  # ALL
+    10: "AI MAX (Left)",  # BAN
+    14: "Heavy Weapon",  # BAN
+    21: "AV MAX (Right)",  # BAN
+    20: "AA MAX (Right)",  # BAN
+    22: "AI MAX (Right)",  # BAN
+    9: "AV MAX (Left)",  # BAN
+    23: "AA MAX (Left)",  # BAN
+    147: "Aerial Combat Weapon",  # ALL
+    104: "Vehicle Weapons",  # BAN
+    211: "Colossus Primary Weapon",  # BAN
+    144: "ANT Top Turret",  # BAN
+    157: "Hybrid Rifle",  # BAN
+    126: "Reaver Wing Mount",  # BAN
+    208: "Bastion Point Defense",  # BAN
+    209: "Bastion Bombard",  # BAN
+    210: "Bastion Weapon System",  # BAN
 }
 
+category_id_by_name = {v: k for k, v in we_cats.items()}
+
 # Discrimination per category
+deprecated_categories = [
+    category_id_by_name["Battle Rifle"]
+]  # these are no-longer relevant categories. Battle rifles have been migrated to scout rifles
 ignored_categories = []  # [104,211,144,157,126,208,209,210,139] Switched this to banned
-banned_categories = [21, 20, 22, 9, 23, 10, 18, 14, 4, 104, 211, 144, 157, 126, 208, 209, 210, 139]
+banned_categories = [
+    21,
+    20,
+    22,
+    9,
+    23,
+    10,
+    18,
+    14,
+    4,
+    104,
+    211,
+    144,
+    157,
+    126,
+    208,
+    209,
+    210,
+    139,
+]
 allowed_categories = [24, 12]
 detailed = [2, 3, 5, 6, 7, 8, 11, 17, 19, 13]
 no_point = [13, 17, 147]
@@ -100,7 +124,7 @@ def get_banned_per_category(cat: int, w_id: int) -> bool:
             6009516: "NS Icebreaker",
             6009517: "NS Icebreaker",
             6009518: "NS Icebreaker",
-            6009600: "NS Firebug"
+            6009600: "NS Firebug",
         }
     # Pistol
     elif cat == 3:
@@ -122,7 +146,7 @@ def get_banned_per_category(cat: int, w_id: int) -> bool:
             6009652: 'NS-357 "Endeavor" Underboss',
             6009902: "U-100 Lastly",
             6009903: "U-150 Recall",
-            6009904: "U-200 Harbinger"
+            6009904: "U-200 Harbinger",
         }
     # SMG
     elif cat == 5:
@@ -143,15 +167,11 @@ def get_banned_per_category(cat: int, w_id: int) -> bool:
             6003879: "MG-S1 Jackal",
             6003925: "VE-S Canis",
             6005968: "NSX-A Kappa",
-            6009203: "NS-66 Punisher"
+            6009203: "NS-66 Punisher",
         }
     # LMG
     elif cat == 6:
-        d = {
-            1879: "NC6A GODSAW",
-            1894: "Betelgeuse 54-A",
-            1924: 'T9A "Butcher"'
-        }
+        d = {1879: "NC6A GODSAW", 1894: "Betelgeuse 54-A", 1924: 'T9A "Butcher"'}
     # Assault Rifle
     elif cat == 7:
         d = {
@@ -169,26 +189,16 @@ def get_banned_per_category(cat: int, w_id: int) -> bool:
             6009898: "PMG-3XB",
             6009899: "XMG-100",
             6009900: "XMG-155",
-            6009901: "XMG-200"
+            6009901: "XMG-200",
         }
     # Carbine
     elif cat == 8:
-        d = {
-            1869: "19A Fortuna",
-            1914: "TRAC-Shot",
-            1919: "Eclipse VE3A"
-        }
+        d = {1869: "19A Fortuna", 1914: "TRAC-Shot", 1919: "Eclipse VE3A"}
     elif cat == 13:
-        d = {
-            1964: "The Kraken"
-        }
+        d = {1964: "The Kraken"}
     # Sniper Rifle
     elif cat == 11:
-        d = {
-            1969: "The Moonshot",
-            1974: "Bighorn .50M",
-            1979: "Parsec VX3-A"
-        }
+        d = {1969: "The Moonshot", 1974: "Bighorn .50M", 1979: "Parsec VX3-A"}
     # Grenades
     elif cat == 17:
         d = {
@@ -203,7 +213,7 @@ def get_banned_per_category(cat: int, w_id: int) -> bool:
             6007252: "Water Balloon",
             6009459: "Lightning Grenade",
             6009524: "Condensate Grenade",
-            6009583: "Infernal Grenade"
+            6009583: "Infernal Grenade",
         }
     # Battle Rifle
     elif cat == 19:
@@ -215,7 +225,7 @@ def get_banned_per_category(cat: int, w_id: int) -> bool:
             6004214: "VE-LR Obelisk",
             6004216: "MG-HBR1 Dragoon",
             6005970: "NSX-A Sesshin",
-            6009101: "NS-30 Tranquility"
+            6009101: "NS-30 Tranquility",
         }
     return w_id in d.keys()
 
@@ -234,23 +244,27 @@ def get_unknown_weapon():
 def push_all_weapons(push_db=False):
     giga_list = list()
     for cat in we_cats.keys():
-
         # If category to ignore
         if cat in ignored_categories:
+            print(f"Skipping banned category: {we_cats[cat]}")
+            continue
+
+        if cat in deprecated_categories:
+            print(f"Skipping deprecated category: {we_cats[cat]}")
             continue
 
         # Else get all weapons from the category
-        url = f'http://census.daybreakgames.com/s:{cfg.general["api_key"]}/get/ps2:v2/item/' \
-              f'?item_type_id=26&is_vehicle_weapon=0&item_category_id={cat}' \
-              f'&c:limit=5000&c:show=item_id,item_category_id,name.en,faction_id'
+        url = (
+            f'http://census.daybreakgames.com/s:{cfg.general["api_key"]}/get/ps2:v2/item/'
+            f"?item_type_id=26&is_vehicle_weapon=0&item_category_id={cat}"
+            f"&c:limit=5000&c:show=item_id,item_category_id,name.en,faction_id"
+        )
         response = requests.get(url)
         j_data = json.loads(response.content)
         print(we_cats[cat])  # Print category name
 
         print(url)
-        if "returned" not in j_data:
-            raise ValueError("Nothing returned!")
-        if j_data["returned"] == 0:
+        if "returned" not in j_data or j_data["returned"] == 0:
             raise ValueError("Nothing returned!")
 
         # Iterate trough weapons of this category
@@ -302,8 +316,10 @@ def push_all_weapons(push_db=False):
 
             # Find weapons new to database:
             if not classes.Weapon.get(n_data["_id"]):
-                print(f'Weapon not found in database: '
-                      f'cat : {n_data["cat_id"]}, name: {n_data["name"]}, id: {n_data["_id"]}')
+                print(
+                    f"Weapon not found in database: "
+                    f'cat : {n_data["cat_id"]}, name: {n_data["name"]}, id: {n_data["_id"]}'
+                )
 
     # Add the unknown weapon to the list
     giga_list.append(get_unknown_weapon())
@@ -316,9 +332,11 @@ def push_all_weapons(push_db=False):
 
 
 def display_weapons_from_category(cat):
-    url = f'http://census.daybreakgames.com/s:{cfg.general["api_key"]}/get/ps2:v2/item/' \
-          f'?item_type_id=26&is_vehicle_weapon=0&item_category_id={cat}' \
-          f'&c:limit=5000&c:show=item_id,item_category_id,name.en,faction_id'
+    url = (
+        f'http://census.daybreakgames.com/s:{cfg.general["api_key"]}/get/ps2:v2/item/'
+        f"?item_type_id=26&is_vehicle_weapon=0&item_category_id={cat}"
+        f"&c:limit=5000&c:show=item_id,item_category_id,name.en,faction_id"
+    )
     response = requests.get(url)
     j_data = json.loads(response.content)
     if j_data["returned"] == 0:
@@ -344,9 +362,11 @@ def get_all_categories():
 
 
 def get_weapons_categories():
-    url = f'http://census.daybreakgames.com/s:{cfg.general["api_key"]}/get/ps2:v2/item/' \
-          f'?item_type_id=26&is_vehicle_weapon=0&c:limit=5000' \
-          f'&c:show=item_id,item_category_id,name.en'
+    url = (
+        f'http://census.daybreakgames.com/s:{cfg.general["api_key"]}/get/ps2:v2/item/'
+        f"?item_type_id=26&is_vehicle_weapon=0&c:limit=5000"
+        f"&c:show=item_id,item_category_id,name.en"
+    )
     response = requests.get(url)
     j_data = json.loads(response.content)
     if j_data["returned"] == 0:
