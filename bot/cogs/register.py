@@ -19,7 +19,7 @@ from modules.roles import role_update
 log = getLogger("pog_bot")
 
 
-class RegisterCog(commands.Cog, name='register'):
+class RegisterCog(commands.Cog, name="register"):
     """
     Register cog, handle the commands from register channel
     """
@@ -34,9 +34,9 @@ class RegisterCog(commands.Cog, name='register'):
     """
 
     async def cog_check(self, ctx):  # Check if right channel
-        return ctx.channel.id == cfg.channels['register']
+        return ctx.channel.id == cfg.channels["register"]
 
-    @commands.command(aliases=['r'])
+    @commands.command(aliases=["r"])
     @commands.guild_only()
     async def register(self, ctx, *args):
         if len(ctx.message.mentions) != 0:  # Don't want a mention here
@@ -44,7 +44,9 @@ class RegisterCog(commands.Cog, name='register'):
             return
         player = classes.Player.get(ctx.author.id)
         if not player:
-            await display.NO_RULE.send(ctx, f"={ctx.command.name}", cfg.channels["rules"])
+            await display.NO_RULE.send(
+                ctx, f"={ctx.command.name}", cfg.channels["rules"]
+            )
             return
 
         await _register(player, ctx, args)
@@ -54,7 +56,9 @@ class RegisterCog(commands.Cog, name='register'):
     async def notify(self, ctx):
         player = classes.Player.get(ctx.author.id)
         if not player:
-            await display.NO_RULE.send(ctx, f"={ctx.command.name}", cfg.channels["rules"])
+            await display.NO_RULE.send(
+                ctx, f"={ctx.command.name}", cfg.channels["rules"]
+            )
             return
         if player.is_notify:
             player.is_notify = False
@@ -70,7 +74,9 @@ class RegisterCog(commands.Cog, name='register'):
     async def dm(self, ctx):
         player = classes.Player.get(ctx.author.id)
         if not player:
-            await display.NO_RULE.send(ctx, f"={ctx.command.name}", cfg.channels["rules"])
+            await display.NO_RULE.send(
+                ctx, f"={ctx.command.name}", cfg.channels["rules"]
+            )
             return
         if player.is_dm:
             player.is_dm = False
@@ -85,24 +91,28 @@ class RegisterCog(commands.Cog, name='register'):
     async def quit(self, ctx):
         player = classes.Player.get(ctx.author.id)
         if not player:
-            await display.NO_RULE.send(ctx, f"={ctx.command.name}", cfg.channels["rules"])
+            await display.NO_RULE.send(
+                ctx, f"={ctx.command.name}", cfg.channels["rules"]
+            )
             return
         if player.active:
             await display.AWAY_BLOCKED.send(ctx)
             return
         if player.is_lobbied:
             lobby.remove_from_lobby(player)
-            await display.RM_QUIT.send(ContextWrapper.channel(cfg.channels["lobby"]),
-                                       player.mention,
-                                       names_in_lobby=lobby.get_all_names_in_lobby())
+            await display.RM_QUIT.send(
+                ContextWrapper.channel(cfg.channels["lobby"]),
+                player.mention,
+                names_in_lobby=lobby.get_all_names_in_lobby(),
+            )
         player.is_away = True
         await display.AWAY_GONE.send(ctx, player.mention)
         await role_update(player)
         await player.db_update("away")
 
 
-def setup(client):
-    client.add_cog(RegisterCog(client))
+async def setup(client):
+    await client.add_cog(RegisterCog(client))
 
 
 async def _register(player, ctx, args):
@@ -123,7 +133,9 @@ async def _register(player, ctx, args):
         if not is_al_num(name):  # Char names are only alphanum names
             await display.INVALID_STR.send(ctx, name)
             return
-    if len(args) == 0:  # If user did not input any arg, display. their current registration status
+    if (
+        len(args) == 0
+    ):  # If user did not input any arg, display. their current registration status
         if not player.is_registered:
             await display.REG_NOT_REGISTERED.send(ctx)
             return

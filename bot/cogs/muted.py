@@ -16,7 +16,7 @@ from display.strings import AllStrings as display
 log = getLogger("pog_bot")
 
 
-class MutedCog(commands.Cog, name='muted'):
+class MutedCog(commands.Cog, name="muted"):
     """
     Muted cog, handle the commands from register channel
     """
@@ -25,7 +25,7 @@ class MutedCog(commands.Cog, name='muted'):
         self.client = client
 
     async def cog_check(self, ctx):  # Check if right channel
-        return ctx.channel.id == cfg.channels['muted']
+        return ctx.channel.id == cfg.channels["muted"]
 
     @commands.command()
     @commands.guild_only()
@@ -36,12 +36,14 @@ class MutedCog(commands.Cog, name='muted'):
             await remove_roles(ctx.author.id)
             return
         if player.is_timeout:
-            await display.MUTE_SHOW.send(ctx, dt.utcfromtimestamp(player.timeout).strftime("%Y-%m-%d %H:%M UTC"))
+            await display.MUTE_SHOW.send(
+                ctx, dt.utcfromtimestamp(player.timeout).strftime("%Y-%m-%d %H:%M UTC")
+            )
             return
         await role_update(player)
         await display.MUTE_FREED.send(ctx)
         await perms_muted(False, player.id)
 
 
-def setup(client):
-    client.add_cog(MutedCog(client))
+async def setup(client):
+    await client.add_cog(MutedCog(client))

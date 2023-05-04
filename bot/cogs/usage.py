@@ -18,7 +18,7 @@ from display import AllStrings as disp, ContextWrapper
 log = getLogger("pog_bot")
 
 
-class RegisterCog(commands.Cog, name='usage'):
+class RegisterCog(commands.Cog, name="usage"):
     """
     Muted cog, handle the commands from register channel
     """
@@ -27,9 +27,9 @@ class RegisterCog(commands.Cog, name='usage'):
         self.client = client
 
     async def cog_check(self, ctx):  # Check if right channel
-        return ctx.channel.id == cfg.channels['usage']
+        return ctx.channel.id == cfg.channels["usage"]
 
-    @commands.command(aliases=['u'])
+    @commands.command(aliases=["u"])
     @commands.guild_only()
     async def usage(self, ctx, *args):
         if len(ctx.message.mentions) == 1:
@@ -81,7 +81,14 @@ class RegisterCog(commands.Cog, name='usage'):
         if num > 1:
             suffix = "es"
 
-        await disp.DISPLAY_USAGE.send(ctx, p_id, num_str, suffix, t_str, dt.utcfromtimestamp(time).strftime("%Y-%m-%d %H:%M UTC"))
+        await disp.DISPLAY_USAGE.send(
+            ctx,
+            p_id,
+            num_str,
+            suffix,
+            t_str,
+            dt.utcfromtimestamp(time).strftime("%Y-%m-%d %H:%M UTC"),
+        )
 
     @commands.command()
     @commands.guild_only()
@@ -104,8 +111,10 @@ class RegisterCog(commands.Cog, name='usage'):
 
         req_date, usages = stat_processor.format_for_psb(stat_player, args)
 
-        await disp.PSB_USAGE.send(ctx, stat_player.mention, req_date, player=stat_player, usages=usages)
+        await disp.PSB_USAGE.send(
+            ctx, stat_player.mention, req_date, player=stat_player, usages=usages
+        )
 
 
-def setup(client):
-    client.add_cog(RegisterCog(client))
+async def setup(client):
+    await client.add_cog(RegisterCog(client))

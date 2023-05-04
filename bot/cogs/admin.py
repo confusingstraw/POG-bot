@@ -285,14 +285,14 @@ class AdminCog(commands.Cog, name="admin"):
             if loader.is_all_locked():
                 await disp.BOT_ALREADY.send(ctx, "locked")
                 return
-            loader.lock_all(self.client)
+            await loader.lock_all(self.client)
             await disp.BOT_LOCKED.send(ctx)
             return
         if arg == "unlock":
             if not loader.is_all_locked():
                 await disp.BOT_ALREADY.send(ctx, "unlocked")
                 return
-            loader.unlock_all(self.client)
+            await loader.unlock_all(self.client)
             await disp.BOT_UNLOCKED.send(ctx)
             return
         await disp.WRONG_USAGE.send(ctx, ctx.command.name)
@@ -348,10 +348,46 @@ class AdminCog(commands.Cog, name="admin"):
                 return
             if arg == "config":
                 await loop.run_in_executor(None, cfg.get_config, cfg.LAUNCH_STR)
-                await roles.update_rule_msg()
+                # await roles.update_rule_msg()
                 await loop.run_in_executor(None, db.init, cfg.database)
                 await disp.BOT_RELOAD.send(ctx, "Config")
                 return
+        await disp.WRONG_USAGE.send(ctx, ctx.command.name)
+
+    @commands.command()
+    @commands.guild_only()
+    async def discord(self, ctx, *args):
+        if len(args) == 1:
+            arg = args[0]
+            if arg not in ["restart-bots", "simulate-match", "stop-bots"]:
+                await disp.WRONG_USAGE.send(ctx, ctx.command.name)
+                return
+
+            name = "DiscordAudio"
+            discord_plugins = [
+                m.plugin_manager.get_plugin_by_name(name)
+                for m in Match.get_all_matches()
+            ]
+            if not len(discord_plugins):
+                await disp.BOT_DISCORD_NOT_LOADED.send(ctx)
+                return
+
+            for p in discord_plugins:
+                if arg == "restart-bots":
+                    p.restart()
+                elif arg == "stop-bots":
+                    p.stop()
+                else:
+                    await disp.BOT_DISCORD_SIMULATE.send(ctx)
+                    await p.simulate_match()
+
+            if arg == "restart-bots":
+                await disp.BOT_DISCORD_RESTART.send(ctx)
+            elif arg == "stop-bots":
+                await disp.BOT_DISCORD_STOP.send(ctx)
+
+            return
+
         await disp.WRONG_USAGE.send(ctx, ctx.command.name)
 
     @commands.command()
@@ -423,8 +459,8 @@ class AdminCog(commands.Cog, name="admin"):
             await disp.CAP_NOT_OK.send(ctx, player.mention)
 
 
-def setup(client):
-    client.add_cog(AdminCog(client))
+async def setup(client):
+    await client.add_cog(AdminCog(client))
 
 
 def _log_command(ctx):

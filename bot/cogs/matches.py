@@ -4,7 +4,7 @@ from match.classes import Match
 from classes import Base
 
 
-class MatchesCog(commands.Cog, name='matches'):
+class MatchesCog(commands.Cog, name="matches"):
     """
     Matches cog, handle the user commands in matches channels
     """
@@ -14,7 +14,7 @@ class MatchesCog(commands.Cog, name='matches'):
 
     async def cog_check(self, ctx):
         # Check if right channel
-        return ctx.channel.id in cfg.channels['matches']
+        return ctx.channel.id in cfg.channels["matches"]
 
     """
     commands:
@@ -55,7 +55,7 @@ class MatchesCog(commands.Cog, name='matches'):
         match = Match.get(ctx.channel.id)
         await match.command.bench(ctx, args, bench=False)
 
-    @commands.command(aliases=['p'])
+    @commands.command(aliases=["p"])
     @commands.guild_only()
     @commands.max_concurrency(number=1, wait=True)
     async def pick(self, ctx, *args):
@@ -72,14 +72,14 @@ class MatchesCog(commands.Cog, name='matches'):
                 return
         await match.command.pick(ctx, args)
 
-    @commands.command(aliases=['b', 'map'])
+    @commands.command(aliases=["b", "map"])
     @commands.guild_only()
     @commands.max_concurrency(number=1, wait=True)
     async def base(self, ctx, *args):
         match = Match.get(ctx.channel.id)
         await match.command.base(ctx, args)
 
-    @commands.command(aliases=['rdy'])
+    @commands.command(aliases=["rdy"])
     @commands.guild_only()
     @commands.max_concurrency(number=1, wait=True)
     async def ready(self, ctx):  # when ready
@@ -93,6 +93,5 @@ class MatchesCog(commands.Cog, name='matches'):
         await match.command.squittal(ctx)
 
 
-def setup(client):
-    client.add_cog(MatchesCog(client))
-
+async def setup(client):
+    await client.add_cog(MatchesCog(client))
