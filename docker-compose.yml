@@ -2,9 +2,13 @@ version: "3.9"
 services:
   bot:
     image: pog-bot:latest
+    init: true
+    depends_on:
+      - mongo
     volumes:
       - ./bot:/pog-bot/bot
       - ./commands:/pog-bot/commands
+      - ./sounds:/pog-bot/sounds
       - ./.match-data:/POG-data/matches
       - ./.bot-logs:/POG-data/logging
   mongo:
