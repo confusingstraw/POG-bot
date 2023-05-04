@@ -1,0 +1,4 @@
+# Don't commit sound files.
+*
+# This .gitignore is just to allow us to commit the directory
+!.gitignore
