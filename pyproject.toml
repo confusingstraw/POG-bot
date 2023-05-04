@@ -6,7 +6,7 @@ authors = [
     {name = "YakMM", email = "yak.mayam@gmail.com"},
 ]
 dependencies = [
-    "discord.py @ git+https://github.com/Rapptz/discord.py@45d498c1b76deaf3b394d17ccf56112fa691d160",
+    "discord-py>=2.2.3",
     "requests==2.28.2",
     "numpy==1.24.2",
     "pytz==2023.3",
