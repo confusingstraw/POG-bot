@@ -44,7 +44,7 @@ def run_client(team_id: int, token: str, tasks: Queue, conn: Connection):
         log(team_id, "Missing conn.")
         return
 
-    log("Initializing discord bot...")
+    log(team_id, "Initializing discord bot...")
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
 
@@ -74,32 +74,6 @@ def run_client(team_id: int, token: str, tasks: Queue, conn: Connection):
                     await voice_client.disconnect()
                 voice_client = None
                 voice_channel = None
-
-        """
-        print("Getting channel")
-        voice_channel = client.get_channel(1103529038263353374)
-        print("Using channel to create voice client")
-        try:
-            voice_client = await voice_channel.connect(reconnect=False, timeout=10)
-        except e:
-            print("Received error")
-            print(e)
-            return
-        print("Created voice client")
-        await asyncio.sleep(5)
-        sound_path = Path("/pog-bot/sounds/select_teams.wav")
-        if sound_path.is_file():
-            print("File exists")
-        else:
-            print("File not exists")
-            return
-        audio_source = FFmpegPCMAudio("/pog-bot/sounds/select_teams.wav")
-        voice_client.play(audio_source)
-        print("Playing")
-        while voice_client.is_playing():
-            await asyncio.sleep(1)
-        await disconnect()
-        """
 
         try:
             while not client.is_closed():
