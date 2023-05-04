@@ -33,6 +33,10 @@ class Match:
     _last_match_id = 0
 
     @classmethod
+    def get_all_matches(cls):
+        return cls.__bound_matches.values()
+
+    @classmethod
     def get(cls, ch_id: int):
         if ch_id not in cls.__bound_matches:
             raise UnexpectedError(f"Can't find bound match {ch_id}")
@@ -101,6 +105,10 @@ class Match:
                 "Match instance is not bound, no attribute 'status_str'"
             )
         return self.__objects.status_str
+
+    @property
+    def plugin_manager(self):
+        return self.__objects.plugin_manager
 
     @property
     def id(self):
