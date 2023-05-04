@@ -28,4 +28,4 @@ COPY commands/ $BASE_DIR/commands
 COPY bot/ $BASE_DIR/bot
 COPY CHANGELOG.md README.md $BASE_DIR/
 
-CMD python3 commands/pog_launcher.py
+CMD python3 -u commands/pog_launcher.py

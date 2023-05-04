@@ -109,13 +109,6 @@ class DiscordLobbyAudio(Plugin):
         self._team_2_bot = None
         self.restart()
 
-        def handle_stop(_signum, _frame):
-            self.stop(True)
-
-        loop = asyncio.get_event_loop()
-        loop.add_signal_handler(signal.SIGINT, handle_stop)
-        loop.add_signal_handler(signal.SIGTERM, handle_stop)
-
     def stop(self, immediate=False):
         if self._team_1_bot is not None:
             self._team_1_bot.stop(immediate)

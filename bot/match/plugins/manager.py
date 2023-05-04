@@ -8,7 +8,7 @@ import modules.config as cfg
 _plugins = {
     "SimpleLogger": SimpleLogger,
     "TS3Audio": AudioBot,
-    # "DiscordAudio": DiscordLobbyAudio,
+    "DiscordAudio": DiscordLobbyAudio,
 }
 
 log = getLogger("pog_bot")
