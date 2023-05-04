@@ -1,10 +1,15 @@
 from .logger import SimpleLogger
 from .ts3_interface import AudioBot
+from .discord_audio.discord_lobby_audio import DiscordLobbyAudio
 from .plugin import PluginDisabled
 from logging import getLogger
 import modules.config as cfg
 
-_plugins = [SimpleLogger, AudioBot]
+_plugins = {
+    "SimpleLogger": SimpleLogger,
+    "TS3Audio": AudioBot,
+    # "DiscordAudio": DiscordLobbyAudio,
+}
 
 log = getLogger("pog_bot")
 
@@ -20,31 +25,32 @@ class VirtualAttribute:
 
 class PluginManager:
     def __init__(self, match):
-        plugins_enabled = cfg.LAUNCH_STR != "_test"
+        plugins_enabled = True
         self.match = match
-        self.plugins = list()
+        self._plugins = {}
         if plugins_enabled:
-            for Plug in _plugins:
+            for name, Plug in _plugins.items():
                 try:
-                    self.plugins.append(Plug(self.match))
+                    self._plugins[name] = Plug(self.match)
                 except PluginDisabled as e:
-                    log.warning(f"Could not start plugin '{Plug.__name__}'\n{e}")
+                    log.warning(f"Could not start plugin '{name}'\n{e}")
 
     def on_event(self, event, *args, **kwargs):
-        for p in self.plugins:
+        for name, p in self._plugins.items():
             try:
                 getattr(p, event)(*args, **kwargs)
             except Exception as e:
-                log.error(f"Error occurred in plugin {type(p).__name__}\n{e}")
+                log.error(f"Error occurred in plugin {name}\n{e}")
 
     async def async_clean(self):
-        for p in self.plugins:
+        for name, p in self._plugins.items():
             try:
                 await p.async_clean()
             except Exception as e:
-                log.error(f"Error occurred when clearing plugin {type(p).__name__}\n{e}")
+                log.error(f"Error occurred when clearing plugin {name}\n{e}")
+
+    def get_plugin_by_name(self, name: str):
+        return self._plugins.get(name)
 
     def __getattr__(self, item):
         return VirtualAttribute(self, item)
-
-
