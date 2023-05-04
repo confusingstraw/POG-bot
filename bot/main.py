@@ -189,6 +189,9 @@ def _add_init_handlers(client):
 
     @client.event
     async def on_ready():
+        # Add all cogs
+        await modules.loader.init(client)
+
         # Initialise matches channels
         Match.init_channels(client, cfg.channels["matches"])
 
@@ -237,7 +240,7 @@ def _add_init_handlers(client):
                     ContextWrapper.channel(cfg.channels["lobby"]),
                     names_in_lobby=modules.lobby.get_all_names_in_lobby(),
                 )
-        modules.loader.unlock_all(client)
+        await modules.loader.unlock_all(client)
         log.info("Client is ready!")
         await disp.RDY.send(ContextWrapper.channel(cfg.channels["spam"]), cfg.VERSION)
 
@@ -335,25 +338,26 @@ def main(launch_str=""):
     cfg.get_config(launch_str)
 
     # Set up intents
-    intents = Intents.none()
-    intents.guilds = True
-    intents.members = True
-    intents.bans = False
-    intents.emojis = False
-    intents.integrations = False
-    intents.webhooks = False
-    intents.invites = False
-    intents.voice_states = False
-    intents.presences = True
-    intents.messages = True
-    # intents.guild_messages Activated by the previous one
-    # intents.dm_messages Activated by the previous one
-    intents.reactions = False
-    # intents.guild_reactions
-    # intents.dm_reactions
-    intents.typing = False
-    intents.guild_typing = False
-    intents.dm_typing = False
+    intents = Intents.all()
+    # intents.guilds = True
+    # intents.members = True
+    # intents.moderation = True
+    # intents.presences = True
+    # intents.messages = True
+    # intents.message_content = True
+    # intents.guild_messages = True
+    # intents.dm_messages = True
+    # intents.emojis = False
+    # intents.integrations = False
+    # intents.webhooks = False
+    # intents.invites = False
+    # intents.voice_states = False
+    # intents.reactions = False
+    # # intents.guild_reactions
+    # # intents.dm_reactions
+    # intents.typing = False
+    # intents.guild_typing = False
+    # intents.dm_typing = False
     client = PogClient(intents)
 
     # Remove default help
@@ -385,9 +389,6 @@ def main(launch_str=""):
 
     if launch_str == "_test":
         _test(client)
-
-    # Add all cogs
-    modules.loader.init(client)
 
     # Run server
     client.run(cfg.general["token"])
