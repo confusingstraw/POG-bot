@@ -109,7 +109,7 @@ def run_client(team_id: int, token: str, tasks: Queue, conn: Connection):
                         log(team_id, e)
                         continue
                 elif voice_channel.id != channel_id:
-                    log(f"Moving to channel: {channel_id}")
+                    log(team_id, f"Moving to channel: {channel_id}")
                     voice_channel = client.get_channel(channel_id)
                     await voice_client.move_to(voice_channel)
 
