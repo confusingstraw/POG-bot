@@ -9,6 +9,7 @@ from configparser import ConfigParser, ParsingError
 from logging import getLogger
 import os
 import pathlib
+from os import path
 
 log = getLogger("pog_bot")
 
@@ -19,40 +20,29 @@ class ConfigError(Exception):
 
     :param msg: Error message.
     """
+
     def __init__(self, msg: str):
         self.message = "Error in config file: " + msg
         super().__init__(self.message)
+
 
 ## STATIC PARAMETERS:
 
 name_regex = r"^[ -■]{1,32}$"
 
 #: Dictionary to retrieve faction name by id.
-factions = {
-    1: "VS",
-    2: "NC",
-    3: "TR"
-}
+factions = {1: "VS", 2: "NC", 3: "TR"}
 
 #: Dictionary to retrieve faction id by name.
 i_factions = {v: k for k, v in factions.items()}
 
 # http://census.daybreakgames.com/get/ps2:v2/zone?c:limit=100
 #: Dictionary to retrieve zone name by id.
-zones = {
-    2: "Indar",
-    4: "Hossin",
-    6: "Amerish",
-    8: "Esamir"
-}
+zones = {2: "Indar", 4: "Hossin", 6: "Amerish", 8: "Esamir"}
 
 # http://census.daybreakgames.com/get/ps2:v2/facility_type?c:limit=100
 #: Dictionary to retrieve facility suffix by id.
-facility_suffix = {
-    2: "Amp Station",
-    3: "Bio Lab",
-    4: "Tech Plant"
-}
+facility_suffix = {2: "Amp Station", 3: "Bio Lab", 4: "Tech Plant"}
 
 # http://census.daybreakgames.com/get/ps2:v2/loadout/?c:limit=500
 #: Dictionary to retrieve loadout name by id.
@@ -74,7 +64,7 @@ loadout_id = {
     18: "medic",
     19: "engineer",
     20: "heavy_assault",
-    21: "max"
+    21: "max",
 }
 
 # http://census.daybreakgames.com/get/ps2/base_region/?c:limit=400&c:show=facility_id,facility_name,zone_id,facility_type_id
@@ -92,7 +82,7 @@ base_to_id = {
     "kessel": 266000,
     "nettlemire": 283000,
     "bridgewater": 272000,
-    "rime": 244610
+    "rime": 244610,
 }
 
 #: Dictionary to retrieve base name from id.
@@ -113,17 +103,44 @@ general = {
     "api_key": "",
     "command_prefix": "",
     "lobby_size": 0,
-    'round_length': 0,
-    "squittal_url": ""
+    "round_length": 0,
+    "squittal_url": "",
 }
 
 #: Contains TS3 parameters.
-ts = {
-    "url": "",
-    "config_help": "",
-    "lobby_id": 0,
-    "matches": list()
+ts = {"url": "", "config_help": "", "lobby_id": 0, "matches": list()}
+
+#: Contains Discord parameters.
+discord = {
+    "team_1_token": "",
+    "team_2_token": "",
+    "team_1_voice_channel": 0,
+    "team_2_voice_channel": 0,
+    "lobby_voice_channel": 0,
+    # sounds
+    "lobby_ready_sound": "",
+    "select_teams_sound": "",
+    "select_factions_sound": "",
+    "select_base_sound": "",
+    "base_selected_sound": "",
+    "unknown_base_sound": "",
+    "ready_prompt_sound": "",
+    "team_1_ready_sound": "",
+    "team_2_ready_sound": "",
+    "starts_in_30_sound": "",
+    "starts_in_10_sound": "",
+    "starts_in_5_sound": "",
+    "round_over_sound": "",
+    "switch_sides_sound": "",
+    "match_over_sound": "",
 }
+
+for key in i_factions:
+    discord[f"team_1_picked_{key}_faction_sound"] = ""
+    discord[f"team_2_picked_{key}_faction_sound"] = ""
+
+for key in base_to_id:
+    discord[f"picked_base_{key}_sound"] = ""
 
 #: Contains discord channel IDs.
 channels = {
@@ -135,34 +152,20 @@ channels = {
     "staff": 0,
     "muted": 0,
     "spam": 0,
-    "usage": 0
+    "usage": 0,
 }
 
 #: Contains all channels the bot should read/interact in.
 channels_list = list()
 
 #: Contains discord roles IDs.
-roles = {
-    "admin": 0,
-    "registered": 0,
-    "notify": 0
-}
+roles = {"admin": 0, "registered": 0, "notify": 0}
 
 #: Contains discord emojis IDs.
-emojis = {
-    "VS": ":vs:",
-    "TR": ":tr:",
-    "NC": ":nc:",
-    "info": ":info:"
-}
+emojis = {"VS": ":vs:", "TR": ":tr:", "NC": ":nc:", "info": ":info:"}
 
 #: Contains scoring parameters.
-scores = {
-    "teamkill": 0,
-    "suicide": 0,
-    "capture": 0,
-    "recapture": 0
-}
+scores = {"teamkill": 0, "suicide": 0, "capture": 0, "recapture": 0}
 
 # Contains database collections names.
 _collections = {
@@ -173,7 +176,7 @@ _collections = {
     "player_stats": "",
     "restart_data": "",
     "accounts_usage": "",
-    "match_logs": ""
+    "match_logs": "",
 }
 
 #: Contains database parameters.
@@ -182,7 +185,7 @@ database = {
     "cluster": "",
     "accounts": "",
     "jaeger_cal": "",
-    "collections": _collections
+    "collections": _collections,
 }
 
 #: Contains url for base images.
@@ -190,6 +193,7 @@ base_images = dict()
 
 
 ## Methods
+
 
 def get_config(launch_str: str):
     """
@@ -203,6 +207,7 @@ def get_config(launch_str: str):
     GAPI_JSON = f"google_api_secret{launch_str}.json"
 
     file = f"{pathlib.Path(__file__).parent.absolute()}/../config{launch_str}.cfg"
+    sounds_dir = f"{pathlib.Path(__file__).parent.absolute()}/../../sounds/"
 
     if not os.path.isfile(file):
         raise ConfigError(f"{file} not found!")
@@ -219,13 +224,13 @@ def get_config(launch_str: str):
     for key in general:
         try:
             if isinstance(general[key], int):
-                general[key] = int(config['General'][key])
+                general[key] = int(config["General"][key])
             else:
-                general[key] = config['General'][key]
+                general[key] = config["General"][key]
         except KeyError:
-            _error_missing(key, 'General', file)
+            _error_missing(key, "General", file)
         except ValueError:
-            _error_incorrect(key, 'General', file)
+            _error_incorrect(key, "General", file)
 
     # Testing api key
     # skip_api_test = True
@@ -245,22 +250,50 @@ def get_config(launch_str: str):
         for key in ts:
             try:
                 if key == "matches":
-                    tmp = config['Teamspeak'][key].split(',')
+                    tmp = config["Teamspeak"][key].split(",")
                     ts[key].clear()
                     for m in tmp:
                         ts[key].append(list())
-                        c_id = m.split('/')
+                        c_id = m.split("/")
                         for val in c_id:
                             ts[key][-1].append(int(val))
                 elif isinstance(ts[key], int):
-                    ts[key] = int(config['Teamspeak'][key])
+                    ts[key] = int(config["Teamspeak"][key])
                 else:
-                    ts[key] = config['Teamspeak'][key]
+                    ts[key] = config["Teamspeak"][key]
             except KeyError:
-                _error_missing(key, 'Teamspeak', file)
+                _error_missing(key, "Teamspeak", file)
             except ValueError:
-                _error_incorrect(key, 'Teamspeak', file)
+                _error_incorrect(key, "Teamspeak", file)
 
+    # Discord section
+    try:
+        _check_section(config, "Discord", file)
+    except ConfigError:
+        pass
+    else:
+        for key in discord:
+            try:
+                if key.endswith("_sound"):
+                    value = config["Discord"].get(key)
+                    if not value:  # all sounds are optional
+                        continue
+                    sound_path = pathlib.Path(
+                        path.join(sounds_dir, path.basename(value))
+                    ).resolve()
+                    if not sound_path.exists():
+                        raise ValueError(f"Missing sound file for '{key}'")
+                    if not sound_path.is_file():
+                        raise ValueError(f"Sound file for '{key}' is not a file")
+                    discord[key] = str(sound_path)
+                elif isinstance(discord[key], int):
+                    discord[key] = int(config["Discord"][key])
+                else:
+                    discord[key] = config["Discord"][key]
+            except KeyError:
+                _error_missing(key, "Discord", file)
+            except ValueError:
+                _error_incorrect(key, "Discord", file)
 
     # Channels section
     _check_section(config, "Channels", file)
@@ -269,46 +302,46 @@ def get_config(launch_str: str):
     for key in channels:
         try:
             if key == "matches":
-                tmp = config['Channels'][key].split(',')
+                tmp = config["Channels"][key].split(",")
                 channels[key].clear()
                 for m in tmp:
                     channels[key].append(int(m))
                     channels_list.append(int(m))
             else:
-                channels[key] = int(config['Channels'][key])
+                channels[key] = int(config["Channels"][key])
                 channels_list.append(channels[key])
         except KeyError:
-            _error_missing(key, 'Channels', file)
+            _error_missing(key, "Channels", file)
         except ValueError:
-            _error_incorrect(key, 'Channels', file)
+            _error_incorrect(key, "Channels", file)
 
     # Roles section
     _check_section(config, "Roles", file)
     for key in roles:
         try:
-            roles[key] = int(config['Roles'][key])
+            roles[key] = int(config["Roles"][key])
         except KeyError:
-            _error_missing(key, 'Roles', file)
+            _error_missing(key, "Roles", file)
         except ValueError:
-            _error_incorrect(key, 'Roles', file)
+            _error_incorrect(key, "Roles", file)
 
     # Emojis section
     _check_section(config, "Emojis", file)
     for key in emojis:
         try:
-            emojis[key] = config['Emojis'][key]
+            emojis[key] = config["Emojis"][key]
         except KeyError:
-            _error_missing(key, 'Emojis', file)
+            _error_missing(key, "Emojis", file)
 
     # Scores section
     _check_section(config, "Scores", file)
     for key in scores:
         try:
-            scores[key] = int(config['Scores'][key])
+            scores[key] = int(config["Scores"][key])
         except KeyError:
-            _error_missing(key, 'Scores', file)
+            _error_missing(key, "Scores", file)
         except ValueError:
-            _error_incorrect(key, 'Scores', file)
+            _error_incorrect(key, "Scores", file)
 
     # Database section
     _check_section(config, "Database", file)
@@ -316,21 +349,21 @@ def get_config(launch_str: str):
     for key in database:
         if key != "collections":
             try:
-                database[key] = config['Database'][key]
+                database[key] = config["Database"][key]
             except KeyError:
-                _error_missing(key, 'Database', file)
+                _error_missing(key, "Database", file)
 
     # Collections section
     _check_section(config, "Collections", file)
 
     for key in database["collections"]:
         try:
-            database["collections"][key] = config['Collections'][key]
+            database["collections"][key] = config["Collections"][key]
         except KeyError:
-            _error_missing(key, 'Collections', file)
+            _error_missing(key, "Collections", file)
 
     # Version
-    with open('../CHANGELOG.md', 'r', encoding='utf-8') as txt:
+    with open("../CHANGELOG.md", "r", encoding="utf-8") as txt:
         txt_str = txt.readline()
     global VERSION
     # Extracts "X.X.X" from string "# vX.X.X:" in a lazy way
@@ -340,11 +373,13 @@ def get_config(launch_str: str):
     _check_section(config, "Base_Images", file)
     base_images.clear()
 
-    for key in config['Base_Images'].keys():
+    for key in config["Base_Images"].keys():
         try:
-            base_images[base_to_id[key]] = config['Base_Images'][key]
+            base_images[base_to_id[key]] = config["Base_Images"][key]
         except KeyError:
-            raise ConfigError(f"Missing base '{key}' in 'base_to_id' dictionary in 'config.py'")
+            raise ConfigError(
+                f"Missing base '{key}' in 'base_to_id' dictionary in 'config.py'"
+            )
 
 
 def _check_section(config, section, file):

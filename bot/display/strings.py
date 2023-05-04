@@ -202,6 +202,10 @@ class AllStrings(Enum):
     )
     BOT_INIT = Message("{} initialized!")
     BOT_RELOAD = Message("{} reloaded!")
+    BOT_DISCORD_RESTART = Message("Bots have been restarted!")
+    BOT_DISCORD_SIMULATE = Message("Simulating match...")
+    BOT_DISCORD_STOP = Message("Bots have been stopped!")
+    BOT_DISCORD_NOT_LOADED = Message("No DiscordAudio plugin found, unable to restart!")
     BOT_U_DUMB = Message(
         "That's not really nice, I'm doing my best to bring 24/7 Jaeger matches in a friendly "
         "environment and all the rewards that I get are insults and wickedness :("
