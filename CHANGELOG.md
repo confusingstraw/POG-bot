@@ -1,6 +1,10 @@
-# v3.6:
+# v3.7:
 ### (Work In Progress)
+- Add Dockerfile and docker-compose.yml for easier deployment
+- Add debug commands to initialize various parts of the database from Discord
+- Initial implementation of DiscordAudio plugin
 
+# v3.6:
 - Added =quit command to leave the channels
 - Added ephemeral responses for rules and lobby interactions
 - Benched players are no longer mentioned when match is starting/ending
