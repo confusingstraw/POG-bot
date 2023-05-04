@@ -2,7 +2,7 @@ FROM python:3.9
 
 RUN apt-get update && apt-get install -y git ffmpeg
 
-RUN python3 -m pip install pdm
+RUN python3 -m pip install pdm 'requests<2.30.0'
 
 ENV BASE_DIR=/pog-bot
 ENV LOGGING_DIR=/POG-data/logging
@@ -28,4 +28,4 @@ COPY commands/ $BASE_DIR/commands
 COPY bot/ $BASE_DIR/bot
 COPY CHANGELOG.md README.md $BASE_DIR/
 
-CMD python3 -u commands/pog_launcher.py
+CMD ["python3", "-u", "commands/pog_launcher.py"]
