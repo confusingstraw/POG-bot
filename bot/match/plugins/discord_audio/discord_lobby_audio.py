@@ -101,6 +101,9 @@ class DiscordLobbyAudio(Plugin):
 
     def __init__(self, match):
         super().__init__(match)
+        if not cfg.discord["team_1_token"] or not cfg.discord["team_2_token"]:
+            raise PluginDisabled("Missing discord audio bot token!")
+
         self._round_no_override = None
         self._team_1_bot = None
         self._team_2_bot = None
